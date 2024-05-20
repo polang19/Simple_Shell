@@ -4,7 +4,7 @@
 #include <winternl.h>
 
 #include "E://Vs_Work_space//EnCode//Encode//Share.h"
-//×¢²átls
+//æ³¨å†Œtls
 
 #ifdef _WIN64
 #pragma comment(linker,"/INCLUDE:_tls_used")
@@ -12,11 +12,11 @@
 #pragma comment(linker,"/INCLUDE:__tls_used")
 #endif // _WIN64
 
-//°ÑÊı¾İ¶ÎÈÚÈë´úÂë¶Î
+//æŠŠæ•°æ®æ®µèå…¥ä»£ç æ®µ
 #pragma comment(linker,"/merge:.data=.text")
-//°ÑÖ»¶ÁÊı¾İ¶ÎÈÚÈë´úÂë¶Î
+//æŠŠåªè¯»æ•°æ®æ®µèå…¥ä»£ç æ®µ
 #pragma comment(linker,"/merge:.rdata=.text")
-//ÉèÖÃ´úÂë¶ÎÎª¿É¶Á¿ÉĞ´¿ÉÖ´ĞĞ
+//è®¾ç½®ä»£ç æ®µä¸ºå¯è¯»å¯å†™å¯æ‰§è¡Œ
 #pragma comment(linker,"/section:.text,RWE")
 
 extern "C" __declspec(dllexport) StubConf g_Sc = { 0 };
@@ -64,24 +64,24 @@ FuExitProcess MyExitProcess = 0;
 int a = 1;
 int b = 1;
 
-//»ñÈ¡ÄÚºËÄ£¿é»ùÖ·
+//è·å–å†…æ ¸æ¨¡å—åŸºå€
 void GetKernel()
 {
 	__asm 
 	{
 		push esi;
-		mov esi, fs:[0x30];   //µÃµ½PEBµØÖ·
-		mov esi, [esi + 0xc]; //Ö¸ÏòPEB_LDR_DATA½á¹¹µÄÊ×µØÖ·
-		mov esi, [esi + 0x1c];//Ò»¸öË«ÏòÁ´±íµÄµØÖ·
-		mov esi, [esi];       //µÃµ½µÚ2¸öÌõÄ¿kernelBaseµÄÁ´±í
-		mov esi, [esi];       //µÃµ½µÚ3¸öÌõÄ¿kernel32µÄÁ´±í(win10ÏµÍ³)
-		mov esi, [esi + 0x8]; //kernel32.dllµØÖ·
+		mov esi, fs:[0x30];   //å¾—åˆ°PEBåœ°å€
+		mov esi, [esi + 0xc]; //æŒ‡å‘PEB_LDR_DATAç»“æ„çš„é¦–åœ°å€
+		mov esi, [esi + 0x1c];//ä¸€ä¸ªåŒå‘é“¾è¡¨çš„åœ°å€
+		mov esi, [esi];       //å¾—åˆ°ç¬¬2ä¸ªæ¡ç›®kernelBaseçš„é“¾è¡¨
+		mov esi, [esi];       //å¾—åˆ°ç¬¬3ä¸ªæ¡ç›®kernel32çš„é“¾è¡¨(win10ç³»ç»Ÿ)
+		mov esi, [esi + 0x8]; //kernel32.dllåœ°å€
 		mov g_hKernel32, esi;
 		pop esi;
 	}
 }
 
-//»ñÈ¡GetProcAddressº¯ÊıµØÖ·
+//è·å–GetProcAddresså‡½æ•°åœ°å€
 void MyGetFunAddress()
 {	
 	__asm 
@@ -90,34 +90,34 @@ void MyGetFunAddress()
 		mov ebp, esp;
 		sub esp, 0xc;
 		mov edx, g_hKernel32;
-		mov esi, [edx + 0x3c];     //NTÍ·µÄRVA
-		lea esi, [esi + edx];      //NTÍ·µÄVA
-		mov esi, [esi + 0x78];     //ExportµÄRva		
-		lea edi, [esi + edx];      //ExportµÄVa
+		mov esi, [edx + 0x3c];     //NTå¤´çš„RVA
+		lea esi, [esi + edx];      //NTå¤´çš„VA
+		mov esi, [esi + 0x78];     //Exportçš„Rva		
+		lea edi, [esi + edx];      //Exportçš„Va
 							       
-		mov esi, [edi + 0x1c];     //EatµÄRva
-		lea esi, [esi + edx];      //EatµÄVa
-		mov[ebp - 0x4], esi;       //±£´æEat
+		mov esi, [edi + 0x1c];     //Eatçš„Rva
+		lea esi, [esi + edx];      //Eatçš„Va
+		mov[ebp - 0x4], esi;       //ä¿å­˜Eat
 							       
-		mov esi, [edi + 0x20];     //EntµÄRva
-		lea esi, [esi + edx];      //EntµÄVa
-		mov[ebp - 0x8], esi;       //±£´æEnt
+		mov esi, [edi + 0x20];     //Entçš„Rva
+		lea esi, [esi + edx];      //Entçš„Va
+		mov[ebp - 0x8], esi;       //ä¿å­˜Ent
 							       
-		mov esi, [edi + 0x24];     //EotµÄRva
-		lea esi, [esi + edx];      //EotµÄVa
-		mov[ebp - 0xc], esi;       //±£´æEot
+		mov esi, [edi + 0x24];     //Eotçš„Rva
+		lea esi, [esi + edx];      //Eotçš„Va
+		mov[ebp - 0xc], esi;       //ä¿å­˜Eot
 
 		xor ecx, ecx;
 		jmp _First;
 	_Zero:
 		inc ecx;
 	_First:
-		mov esi, [ebp - 0x8];     //EntµÄVa
-		mov esi, [esi + ecx * 4]; //FunNameµÄRva
+		mov esi, [ebp - 0x8];     //Entçš„Va
+		mov esi, [esi + ecx * 4]; //FunNameçš„Rva
 
-		lea esi, [esi + edx];     //FunNameµÄVa
+		lea esi, [esi + edx];     //FunNameçš„Va
 		cmp dword ptr[esi], 050746547h;// 47657450 726F6341 64647265 7373;
-		jne _Zero;                     // ÉÏÃæµÄ16½øÖÆÊÇGetProcAddressµÄ
+		jne _Zero;                     // ä¸Šé¢çš„16è¿›åˆ¶æ˜¯GetProcAddressçš„
 		cmp dword ptr[esi + 4], 041636f72h;
 		jne _Zero;
 		cmp dword ptr[esi + 8], 065726464h;
@@ -126,11 +126,11 @@ void MyGetFunAddress()
 		jne _Zero;
 
 		xor ebx,ebx
-		mov esi, [ebp - 0xc];     //EotµÄVa
-		mov bx, [esi + ecx * 2];  //µÃµ½ĞòºÅ
+		mov esi, [ebp - 0xc];     //Eotçš„Va
+		mov bx, [esi + ecx * 2];  //å¾—åˆ°åºå·
 
-		mov esi, [ebp - 0x4];     //EatµÄVa
-		mov esi, [esi + ebx * 4]; //FunAddrµÄRva
+		mov esi, [ebp - 0x4];     //Eatçš„Va
+		mov esi, [esi + ebx * 4]; //FunAddrçš„Rva
 		lea eax, [esi + edx];     //FunAddr
 		mov MyGetProcAddress, eax;	
 		add esp, 0xc;
@@ -138,7 +138,7 @@ void MyGetFunAddress()
 	}
 }
 
-//×ÔĞ´strcmp
+//è‡ªå†™strcmp
 int StrCmpText(const char* pStr, char* pBuff)
 {
 	int nFlag = 1;
@@ -156,15 +156,15 @@ int StrCmpText(const char* pStr, char* pBuff)
 	return nFlag;
 }
 
-//½âÃÜ
+//è§£å¯†
 void Decryption()
 {
-	//»ñÈ¡.textµÄÇø¶ÎÍ·
+	//è·å–.textçš„åŒºæ®µå¤´
 	auto pNt = GetNtHeader((char*)g_hModule);
 	DWORD dwSecNum = pNt->FileHeader.NumberOfSections;
 	auto pSec = IMAGE_FIRST_SECTION(pNt);
 
-	//ÕÒµ½´úÂëÇø¶Î
+	//æ‰¾åˆ°ä»£ç åŒºæ®µ
 	for (size_t i = 0; i < dwSecNum; i++)
 	{
 		if (StrCmpText(".text", (char*)pSec[i].Name))
@@ -174,11 +174,11 @@ void Decryption()
 		}
 	}
 
-	//»ñÈ¡´úÂë¶ÎÊ×µØÖ·
+	//è·å–ä»£ç æ®µé¦–åœ°å€
 	char* pTarText = pSec->VirtualAddress + (char*)g_hModule;
 	int nSize = pSec->Misc.VirtualSize;
 	DWORD old = 0;
-	//½âÃÜ´úÂë¶Î
+	//è§£å¯†ä»£ç æ®µ
 	MyVirtualProtect(pTarText, nSize, PAGE_READWRITE, &old);
 	for (int i = 0; i < nSize; ++i) {
 		pTarText[i] ^= 0x15;
@@ -186,14 +186,14 @@ void Decryption()
 	MyVirtualProtect(pTarText, nSize, old, &old);
 }
  
-//ÔËĞĞº¯Êı
+//è¿è¡Œå‡½æ•°
 void RunFun()
 {
 	MyLoadLibraryExA = (FuLoadLibraryExA)MyGetProcAddress(g_hKernel32, "LoadLibraryExA");
 	g_hUser32 = MyLoadLibraryExA("user32.dll", 0, 0);
 
 	MyMessageBoxW = (FuMessageBoxW)MyGetProcAddress(g_hUser32, "MessageBoxW");
-	MyMessageBoxW(0, L"´ó¼ÒºÃÎÒÊÇÒ»¸ö¿Ç", L"ÌáÊ¾", 0);
+	MyMessageBoxW(0, L"å¤§å®¶å¥½æˆ‘æ˜¯ä¸€ä¸ªå£³", L"æç¤º", 0);
 	MyGetModuleHandleW = (FuGetModuleHandleW)MyGetProcAddress(g_hKernel32,"GetModuleHandleW");
 	g_hModule = (HMODULE)(FuGetModuleHandleW)MyGetModuleHandleW(0);
 	MyVirtualProtect = (FuVirtualProtect)MyGetProcAddress(g_hKernel32,"VirtualProtect");
@@ -202,17 +202,17 @@ void RunFun()
 
 int ExceptFilter()
 {	
-	b = 1; // ĞŞ¸ÄbµÄÖµÎª1£¬ÒÔ·ÀÖ¹ÎŞÏŞÑ­»·µÄÒì³£´¦Àí
+	b = 1; // ä¿®æ”¹bçš„å€¼ä¸º1ï¼Œä»¥é˜²æ­¢æ— é™å¾ªç¯çš„å¼‚å¸¸å¤„ç†
 	Decryption();
 	g_Sc.dwOep += 0x400000;
 	__asm jmp g_Sc.dwOep;
-	return EXCEPTION_CONTINUE_EXECUTION; // ÔÚ´¦ÀíÍêÒì³£ºó£¬³ÌĞò¼ÌĞøÖ´ĞĞÒì³£·¢ÉúÎ»ÖÃµÄ´úÂë
+	return EXCEPTION_CONTINUE_EXECUTION; // åœ¨å¤„ç†å®Œå¼‚å¸¸åï¼Œç¨‹åºç»§ç»­æ‰§è¡Œå¼‚å¸¸å‘ç”Ÿä½ç½®çš„ä»£ç 
 }
 
 extern "C" __declspec(dllexport) __declspec(naked)
 void Start()
 {
-	//»ñÈ¡kernel32.dllµØÖ·
+	//è·å–kernel32.dllåœ°å€
 	GetKernel();
 	__asm {
          call LABEL9;
@@ -223,7 +223,7 @@ void Start()
          __emit 0xF3;
      }
 
-	//»ñÈ¡GetProcAddressº¯ÊıµØÖ·
+	//è·å–GetProcAddresså‡½æ•°åœ°å€
 	MyGetFunAddress();
 	 __asm
     {
